@@ -1,9 +1,20 @@
 from random import randint
 from Observable import Observable  # Observed by a Home
+# Author: Sean Aubrey
+# Version: 1.0
 
 
-# A monster or person is an NPC, which is an Observable object
+# Inherited class. Instanced multiple times per home.
+# An NPC is-an Observable type, observed by a home.
+# NPCs monsters can die and then transform into humans,
+# and human NPCs do not take Player damage, and instead
+# give the player candy to increase his/her health.
 class NPC(Observable):
+
+    # @param name String The type of NPC
+    # @param health int NPC's starting health.
+    # @param min_attack int Minimum attack value.
+    # @param max_attack int Maximum attack value.
     def __init__(self, name, health, min_attack, max_attack):
         super(NPC, self).__init__()  # passes self to Observable
         self._name = name
@@ -11,22 +22,34 @@ class NPC(Observable):
         self.__min_attack = min_attack
         self.__max_attack = max_attack
 
+    # Every NPC must be able to take damage from the player.
+    # @param attack_val int Player's calculated attack value.
+    # @param wep_type String Player's chose weapon type.
     def take_damage(self, attack_val, wep_type):
         raise NotImplementedError
 
+    # Calculates and returns the NPC's attack value, chosen
+    # randomly within its set range.
+    # @return int Random damage to be applied to the Player.
     def attack(self):
         damage = randint(self.__min_attack, self.__max_attack)
         print("  ", self._name, "does", damage, "damage!")
         return damage
 
+    # Checks if the NPC's health has reached zero, at which point
+    # the observing home is updated with the NPC child object type.
     def _check_dead(self):
         if self._health <= 0:
-            self.update_observable(self)  # Let the house know that you're dead
+            self.update_observers(self)  # Let the house know that you're dead
             self.remove_all_observers()  # Just the one house, in this case
 
     def get_name(self):
         return self._name
 
+
+# Person NPC does not take damage from the Player.
+# And, instead of decreasing the player's health,
+# a negative attack value is returned to increase it.
 class Person(NPC):
     def __init__(self):
         NPC.__init__(self, "Person", 100, 0, 0)

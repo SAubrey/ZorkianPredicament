@@ -14,6 +14,6 @@ class Observable(object):
     def remove_all_observers(self):
         self.observers = []
 
-    def update_observable(self, arg):
+    def update_observers(self, arg):
         for observer in self.observers:
-            observer.update_observer(arg)
+            observer.update(arg)
